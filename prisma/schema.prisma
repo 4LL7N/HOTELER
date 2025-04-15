@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -14,22 +13,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model user {
   id        String    @id @default(uuid())
   email     String    @unique
   password  String
-  role      Role      @default(USER)
+  role      role      @default(USER)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  Booking   Booking[]
+  Booking   booking[]
 }
 
-enum Role {
+enum role {
   USER
   ADMIN
 }
 
-model Room {
+model room {
   id          String    @id @default(uuid())
   number      String    @unique
   type        String
@@ -37,39 +36,39 @@ model Room {
   capacity    Int
   isAvailable Boolean   @default(true)
   amenities   String[]
-  Booking     Booking[]
+  Booking     booking[]
 }
 
-model Booking {
+model booking {
   id         String        @id @default(uuid())
   checkIn    DateTime
   checkOut   DateTime
   totalPrice Float
-  status     BookingStatus @default(PENDING)
+  status     bookingStatus @default(PENDING)
   userId     String
-  user       User          @relation(fields: [userId], references: [id])
+  user       user          @relation(fields: [userId], references: [id])
   roomId     String
-  room       Room          @relation(fields: [roomId], references: [id])
-  Payment    Payment?
+  room       room          @relation(fields: [roomId], references: [id])
+  Payment    payment?
 }
 
-enum BookingStatus {
+enum bookingStatus {
   PENDING
   CONFIRMED
   CANCELLED
 }
 
-model Payment {
+model payment {
   id        String        @id @default(uuid())
   amount    Float
   method    String
-  status    PaymentStatus @default(PENDING)
+  status    paymentStatus @default(PENDING)
   bookingId String        @unique
-  booking   Booking       @relation(fields: [bookingId], references: [id])
+  booking   booking       @relation(fields: [bookingId], references: [id])
   createdAt DateTime      @default(now())
 }
 
-enum PaymentStatus {
+enum paymentStatus {
   PENDING
   COMPLETED
   FAILED
