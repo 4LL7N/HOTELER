@@ -44,6 +44,7 @@ model booking {
   checkIn    DateTime
   checkOut   DateTime
   totalPrice Float
+  createdAt DateTime  @default(now())
   status     bookingStatus @default(PENDING)
   userId     String
   user       user          @relation(fields: [userId], references: [id])
