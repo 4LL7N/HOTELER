@@ -1,7 +1,7 @@
 import express from "express"
 import morgan from "morgan"
 import * as dotenv from "dotenv"
-import { createUser } from "./handler/auth"
+import { createUser, login } from "./handler/auth"
 
 dotenv.config()
 
@@ -15,6 +15,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 app.post('/auth/register', createUser);
+app.post('/auth/login', login);
 
 
 export default app

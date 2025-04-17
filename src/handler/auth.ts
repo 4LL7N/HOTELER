@@ -1,10 +1,7 @@
 import { Request, Response } from "express"
 import prisma from "../prismaClient"
 import { PrismaClientInitializationError } from "@prisma/client/runtime/library"
-import { createJWT, hashPassword } from "../modules/auth"
-
-
-
+import { comparePasswords, createJWT, hashPassword } from "../modules/auth"
 
 export const createUser = async (
     req: Request & {
@@ -42,5 +39,47 @@ export const createUser = async (
             res.status(400).json({ message: "User already exists"});
         }
         res.status(500).json({ message: "Internal Server Error"});
+    }
+}
+
+export const login = async(
+    req: Request & {
+        body: {
+            email: string,
+            password: string,
+        },
+    },
+    res: Response
+) => {
+    const { email, password }: { email: string, password: string } = req.body;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email,
+            },
+        });
+
+        if(!user) {
+            res.status(401).json({ message: "Invalid Credentials" });
+            return;
+        }
+
+        const isValidUser = await comparePasswords(password, user.password);
+
+        if(!isValidUser) {
+            res.status(401).json({ message: "Invalid Credentials" });
+        }
+
+        const token = createJWT(user);
+        res.status(200).json({ 
+            message: "Signed in succesfully!",
+            token,
+        });
+    }catch(err) {
+        if(err instanceof PrismaClientInitializationError) {
+            res.status(400).json({ message: "Invalid Credentials" });
+        }
+        res.status(500).json({ message: "Internal Server Error" });
     }
 }
