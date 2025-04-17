@@ -2,11 +2,11 @@ import express from "express"
 import morgan from "morgan"
 import * as dotenv from "dotenv"
 dotenv.config()
-
-import booksRouter from "./routes/booksRouter"
 import jwt from "jsonwebtoken"
 import { user } from "@prisma/client"
 
+import booksRouter from "./routes/booksRouter"
+import paymentRouter from "./routes/paymentRouter"
 
 declare global {
     namespace Express {
@@ -27,5 +27,6 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 app.use("/api/bookings",booksRouter)
+app.use("/api/payment",paymentRouter)
 
 export default app

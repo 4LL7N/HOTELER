@@ -4,7 +4,8 @@ import prisma from "../prismaClient";
 import { filterGeneratorFilterType, filterGeneratorWhereType } from "../types/bookingTypes";
 import QueryString, { ParsedQs } from "qs";
 import { Request } from "express";
-import { Prisma } from "@prisma/client";
+import { booking, Prisma } from "@prisma/client";
+import { transporter } from "./nodemailer";
 
 //check booking function
 const checkExpiredBookings = async () => {
@@ -19,6 +20,8 @@ const checkExpiredBookings = async () => {
       },
     });
 
+
+
     await prisma.$transaction([
       prisma.booking.updateMany({
         where: {
@@ -27,6 +30,21 @@ const checkExpiredBookings = async () => {
         data: { status: "CANCELLED" },
       }),
     ]);
+
+    expiredBookings.forEach(async (item:booking)=>{
+
+      const user = await prisma.user.findUnique({
+        where:{
+          id:item.userId
+        }
+      })
+
+      await transporter.sendMail({
+        to: user?.email,
+        subject: "HOTELER booking",
+        text: `Your booking ${item.id} has expired and is now cancelled.`,
+      })
+    })
 
     console.log(
       `Cancelled ${

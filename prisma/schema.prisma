@@ -65,6 +65,7 @@ model payment {
   amount    Float
   method    String
   status    paymentStatus @default(PENDING)
+  stripeId  String?        @unique
   bookingId String        @unique
   booking   booking       @relation(fields: [bookingId], references: [id])
   createdAt DateTime      @default(now())
