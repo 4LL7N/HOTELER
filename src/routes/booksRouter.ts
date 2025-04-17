@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getBookings, postBookings } from "../handles/bookingHandler";
+import { changeBooking, deleteBookings, getBookings, getOneBookingForOneRoom, getOneRoomBookings, postBookings } from "../handles/bookingHandler";
 import { body } from "express-validator";
 import { handleInputErrors } from "../middlewares/bookingMiddlware";
 
@@ -15,9 +15,14 @@ router
     postBookings
   );
 
-// router
-//     .route("/")
-//     .get()
-//     .post()
+router
+    .route("/:roomId")
+    .get(getOneRoomBookings)
+
+router
+    .route("/:roomId/:bookingId")
+    .get(getOneBookingForOneRoom)
+    .patch(changeBooking)
+    .delete(deleteBookings)
 
 export default router;

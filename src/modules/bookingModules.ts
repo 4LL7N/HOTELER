@@ -19,8 +19,6 @@ const checkExpiredBookings = async () => {
       },
     });
 
-    console.log(expiredBookings);
-
     await prisma.$transaction([
       prisma.booking.updateMany({
         where: {
@@ -99,11 +97,9 @@ export const select = (fields: string | ParsedQs | (string | ParsedQs)[]|undefin
   }
 };
 
-export const buildPageUrl = (newPage: number,req:Request,) => {
+export const buildPageUrl = (newPage: number|null,req:Request,) => {
     if (!newPage) return null;
     
-    // const query = { ...req.query }; 
-    // query.page? query.page = newPage.toString():null
 
     const queryParams = new URLSearchParams({
         ...req.query,
