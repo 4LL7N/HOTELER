@@ -182,13 +182,91 @@ export const postBookings = async (req: Request, res: Response) => {
 
 export const getOneRoomBookings = async (req: Request, res: Response) => {
   const roomId = req.params.roomId;
-  const userId = req.user?.id;
 
   const {
     page = 1,
     limit = 10,
     sort = "-createdAt",
     fields,
+    status,
+    minPrice,
+    maxPrice,
+    checkInAfter,
+    checkInBefore,
+    search,
+  } = req.query;
+
+  const parsedStatus =
+    typeof status === "string" ? status.toUpperCase() : undefined;
+
+  const where = filterGenerator({
+    status: parsedStatus,
+    roomId,
+    minPrice,
+    maxPrice,
+    checkInAfter,
+    checkInBefore,
+    search,
+  });
+
+  const sortBy = orderBy(sort);
+
+  const limitFields = select(fields);
+
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+  const skip = (pageNumber - 1) * limitNumber;
+
+  try {
+    const [total, bookings] = await prisma.$transaction([
+      prisma.booking.count({ where }),
+      prisma.booking.findMany({
+        where,
+        orderBy: sortBy,
+        select: limitFields,
+        skip,
+        take: limitNumber,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limitNumber);
+
+    const meta = {
+      total,
+      totalPages,
+      currentPage: pageNumber,
+      itemsPerPage: limitNumber,
+      nextPage: buildPageUrl(
+        pageNumber < totalPages ? pageNumber + 1 : null,
+        req
+      ),
+      prevPage: buildPageUrl(pageNumber > 1 ? pageNumber - 1 : null, req),
+    };
+
+    res.status(200).json({
+      status: "success",
+      length: bookings.length,
+      bookings,
+      meta,
+    });
+  } catch (err) {
+    console.log(err);
+
+    res.status(500).json({
+      status: "fail",
+      message: "Internal server error",
+    });
+  }
+};
+
+export const getOneRoomBookingsOfUser = async (req: Request, res: Response) => {
+  const roomId = req.params.roomId;
+  const userId = req.user?.id;
+
+  const {
+    page = 1,
+    limit = 10,
+    sort = "-createdAt",
     status,
     minPrice,
     maxPrice,
@@ -213,7 +291,6 @@ export const getOneRoomBookings = async (req: Request, res: Response) => {
 
   const sortBy = orderBy(sort);
 
-  const limitFields = select(fields);
 
   const pageNumber = Number(page);
   const limitNumber = Number(limit);
@@ -225,7 +302,11 @@ export const getOneRoomBookings = async (req: Request, res: Response) => {
       prisma.booking.findMany({
         where,
         orderBy: sortBy,
-        select: limitFields,
+        select: {
+          id:true,
+          checkIn:true,
+          checkOut:true
+        },
         skip,
         take: limitNumber,
       }),
