@@ -14,6 +14,13 @@ export const getBookings = async (req: Request, res: Response) => {
   ? req.user?.id  // Regular users can only see their own bookings
   : req.query.userId as string | undefined;
 
+  if (req.user?.role != "ADMIN") {
+    res.status(401).json({
+      status: "fail",
+      message: "fobiden to get all booking",
+    });
+  }
+
   const {
     page = 1,
     limit = 10,
@@ -381,6 +388,14 @@ export const changeBooking = async (req: Request, res: Response) => {
   const id = req.params.bookingId;
   const roomId = req.params.roomId;
   const userId = req.user?.id;
+
+  if (req.user?.role != "ADMIN") {
+    res.status(401).json({
+      status: "fail",
+      message: "fobiden to change booking",
+    });
+  }
+
   const {
     status,
     checkIn,
@@ -475,12 +490,12 @@ export const deleteBookings = async (req: Request, res: Response) => {
   const id = req.params.bookingId;
   const userId = req.user?.id;
 
-  // if (req.user?.role != "ADMIN") {
-  //   res.status(401).json({
-  //     status: "fail",
-  //     message: "fobiden to delete booking",
-  //   });
-  // }
+  if (req.user?.role != "ADMIN") {
+    res.status(401).json({
+      status: "fail",
+      message: "fobiden to delete booking",
+    });
+  }
 
   try {
 

@@ -1,7 +1,6 @@
 import express from "express"
 import morgan from "morgan"
 import * as dotenv from "dotenv"
-import { createUser, login } from "./handler/auth"
 
 dotenv.config()
 import jwt from "jsonwebtoken"
@@ -9,6 +8,7 @@ import { user } from "@prisma/client"
 
 import booksRouter from "./routes/booksRouter"
 import paymentRouter from "./routes/paymentRouter"
+import authRouter from "./routes/authRouter"
 
 declare global {
     namespace Express {
@@ -28,10 +28,8 @@ if(process.env.NODE_ENV == "development"){
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
-app.post('/auth/register', createUser);
-app.post('/auth/login', login);
 
-
+app.use("/api/auth",authRouter)
 app.use("/api/bookings",booksRouter)
 app.use("/api/payment",paymentRouter)
 
