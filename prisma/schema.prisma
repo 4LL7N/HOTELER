@@ -14,13 +14,14 @@ datasource db {
 }
 
 model user {
-  id        String    @id @default(uuid())
-  email     String    @unique
+  id        String     @id @default(uuid())
+  email     String     @unique
   password  String
-  role      role      @default(USER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  role      role       @default(USER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   Booking   booking[]
+  CartItem  cartItem[]
 }
 
 enum role {
@@ -29,14 +30,15 @@ enum role {
 }
 
 model room {
-  id          String    @id @default(uuid())
-  number      String    @unique
+  id          String     @id @default(uuid())
+  number      String     @unique
   type        String
   price       Float
   capacity    Int
-  isAvailable Boolean   @default(true)
+  isAvailable Boolean    @default(true)
   amenities   String[]
   Booking     booking[]
+  CartItem    cartItem[]
 }
 
 model booking {
@@ -44,7 +46,8 @@ model booking {
   checkIn    DateTime
   checkOut   DateTime
   totalPrice Float
-  createdAt DateTime  @default(now())
+  createdAt  DateTime      @default(now())
+  expiresAt  DateTime
   status     bookingStatus @default(PENDING)
   userId     String
   user       user          @relation(fields: [userId], references: [id])
@@ -64,6 +67,7 @@ model payment {
   amount    Float
   method    String
   status    paymentStatus @default(PENDING)
+  stripeId  String?       @unique
   bookingId String        @unique
   booking   booking       @relation(fields: [bookingId], references: [id])
   createdAt DateTime      @default(now())
@@ -74,3 +78,25 @@ enum paymentStatus {
   COMPLETED
   FAILED
 }
+
+model cartItem {
+  id        String   @id @default(uuid())
+  checkIn   DateTime
+  checkOut  DateTime
+  adults    Int
+  children  Int
+  services  String? // JSON ფორმატით შენახული სერვისების ID-ების მასივი
+  createdAt DateTime @default(now())
+
+  userId String
+  user   user   @relation(fields: [userId], references: [id])
+  roomId String
+  room   room   @relation(fields: [roomId], references: [id])
+}
+
+model service{
+  id String @id @default(uuid())
+  name String
+  descirpiton String
+  price Float
+} 
