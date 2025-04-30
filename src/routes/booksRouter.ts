@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { changeBooking, deleteBookings, getBookings, getOneBookingForOneRoom, getOneRoomBookings, getOneRoomBookingsOfUser, postBookings } from "../handles/bookingHandler";
+import { changeBooking, deleteBookings, getBookings, getOneBookingForOneRoom, getOneRoomBookings, getOneRoomBookingsOfUser, postBookings } from "../handlers/bookingHandler";
 import { body } from "express-validator";
-import { handleInputErrors } from "../middlewares/bookingMiddlware";
 import { protect } from "../modules/auth";
+import { handleInputErrors } from "../middlewares/middleware";
 
 const router = Router();
 

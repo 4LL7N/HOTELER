@@ -1,17 +1,13 @@
 import { Request, Response } from "express";
 import prisma from "../prismaClient";
-import {
-  buildPageUrl,
-  filterGenerator,
-  orderBy,
-  select,
-} from "../modules/bookingModules";
+import {filterGenerator} from "../modules/bookingModules";
 import { Prisma } from "@prisma/client";
+import { buildPageUrl, orderBy, select } from "../modules/globalModules";
 
 //      path = /
 export const getBookings = async (req: Request, res: Response) => {
   const userId = req.user?.role !== "ADMIN"
-  ? req.user?.id  // Regular users can only see their own bookings
+  ? req.user?.id  
   : req.query.userId as string | undefined;
 
   if (req.user?.role != "ADMIN") {

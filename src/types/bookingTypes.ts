@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { ParsedQs } from 'qs';
 
-export interface filterGeneratorFilterType {
+export interface filterGeneratorBookingFilterType {
     status?:string | ParsedQs | (string | ParsedQs)[],
     userId?:string | ParsedQs | (string | ParsedQs)[],
     roomId?:string | ParsedQs | (string | ParsedQs)[],
@@ -12,7 +12,7 @@ export interface filterGeneratorFilterType {
     search?:string | ParsedQs | (string | ParsedQs)[]
 }
 
-export interface filterGeneratorWhereType extends filterGeneratorFilterType {
+export interface filterGeneratorWhereType extends filterGeneratorBookingFilterType {
     totalPrice?:{
         gte?:number,
         lte?:number

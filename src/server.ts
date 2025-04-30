@@ -9,6 +9,7 @@ import { user } from "@prisma/client"
 import booksRouter from "./routes/booksRouter"
 import paymentRouter from "./routes/paymentRouter"
 import authRouter from "./routes/authRouter"
+import cartItemRouter from "./routes/cartItemRouter"
 
 declare global {
     namespace Express {
@@ -32,6 +33,6 @@ app.use(express.urlencoded({extended:true}))
 app.use("/api/auth",authRouter)
 app.use("/api/bookings",booksRouter)
 app.use("/api/payment",paymentRouter)
-
+app.use("/api/cartItem",cartItemRouter)
 
 export default app
